@@ -384,7 +384,7 @@ function jungleExecute(botBrain)
 	local debugMode = true
 
 	local vecMyPos = unitSelf:GetPosition()
-	local vecTargetPos, nCamp = jungleLib.getNearestCampPos(vecMyPos, 80, jungleLib.currentMaxDifficulty, unitSelf:GetTeam())
+	local vecTargetPos, nCamp = jungleLib.getNearestCampPos(vecMyPos, 40, jungleLib.currentMaxDifficulty, unitSelf:GetTeam())
 	if jungleLib.jungleSpots and jungleLib.jungleSpots[nCamp] and jungleLib.jungleSpots[nCamp].outsidePos then vecTargetPos = jungleLib.jungleSpots[nCamp].outsidePos end
 	if not vecTargetPos then
 		if core.myTeam == HoN.GetHellbourneTeam() then
