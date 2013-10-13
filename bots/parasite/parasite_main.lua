@@ -71,6 +71,11 @@ local sqrtTwo = math.sqrt(2)
 
 BotEcho('loading parasite_main...')
 
+--------------------------------
+-- Lanes
+--------------------------------
+core.tLanePreferences = {Jungle = 5, Mid = 1, ShortSolo = 1, LongSolo = 1, ShortSupport = 1, LongSupport = 1, ShortCarry = 3, LongCarry = 2, hero=core.unitSelf}
+
 ---------------------------------
 --          Constants          --
 ---------------------------------
@@ -182,7 +187,7 @@ local function funcFindItemsOverride(botBrain)
 			if curItem then
 				if core.itemNuke == nil and curItem:GetName() == "Item_Nuke" then
 					core.itemNuke = core.WrapInTable(curItem)
-					botecho("got Nuke")					
+					BotEcho("got Nuke")					
 				elseif core.itemChargedHammer == nil and curItem:GetName() == "Item_Lightning2" then
 					core.itemChargedHammer = core.WrapInTable(curItem)
 				elseif core.itemSymbolOfRage == nil and curItem:GetName() == "Item_LifeSteal4" then
@@ -208,6 +213,17 @@ end
 
 object.onthinkOld = object.onthink
 object.onthink = object.onthinkOverride
+
+
+----------------------------------------
+--         HealAtWell Override        --
+----------------------------------------
+--Return to well, based on more factors than just health.
+function HealAtWellUtilityOverride(botBrain)
+    return object.HealAtWellUtilityOld(botBrain)+(botBrain:GetGold()*8/2000)+ 8-(core.unitSelf:GetManaPercent()*8)
+end
+object.HealAtWellUtilityOld = behaviorLib.HealAtWellBehavior["Utility"]
+behaviorLib.HealAtWellBehavior["Utility"] = HealAtWellUtilityOverride
 
 ----------------------------------------------
 --          OnCombatEvent Override          --
@@ -377,10 +393,10 @@ function jungleExecute(botBrain)
 
 	--clear infested units
 	if (object.unitInfestedUnit and not object.unitInfestedUnit:IsAlive()) then
-		BotEcho("Infested unit gone!")
+		--BotEcho("Infested unit gone!")
 		object.unitInfestedUnit = nil
 	end
-	local unitSelf = object.unitInfestedUnit or core.unitSelf
+	local unitSelf = (object.unitInfestedUnit ~= nil and object.unitInfestedUnit) or core.unitSelf
 	local debugMode = true
 
 	local vecMyPos = unitSelf:GetPosition()
@@ -421,7 +437,7 @@ function jungleExecute(botBrain)
 		if (object.unitInfestedUnit) then
 			if core.OrderAbility(botBrain, object.unitInfestedUnit:GetAbility(3)) then
 				object.unitInfestedUnit=nil
-				BotEcho("getting rid of old unit")
+				--BotEcho("getting rid of old unit")
 				return
 			end
 		end
