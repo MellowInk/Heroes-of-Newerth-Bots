@@ -10,6 +10,7 @@
 --		 Parasite Bot Version 0.1		--
 ------------------------------------------
 --		  Created by: Mellow_Ink		--
+--		  Assistance by: Kairus101		--
 ------------------------------------------
 
 
@@ -442,7 +443,7 @@ behaviorLib.jungleBehavior["Name"] = "jungle"
 tinsert(behaviorLib.tBehaviors, behaviorLib.jungleBehavior)
 
 ----------------------------------------
---          Behavior Changes          --
+--          Behaviour Changes         --
 ----------------------------------------
 function zeroUtility(botBrain)
 	return 0
