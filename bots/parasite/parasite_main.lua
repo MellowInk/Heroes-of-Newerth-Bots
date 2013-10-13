@@ -82,11 +82,11 @@ object.heroName = 'Hero_Parasite'
 behaviorLib.StartingItems =
 	{"Item_IronBuckler", "Item_Scarab"}
 behaviorLib.LaneItems =
-	{"Item_Marchers", "Item_EnchancedMarchers", "Item_Nuke 5", "Item_Spellshards 3"}
+	{"Item_Marchers", "Item_EnhancedMarchers", "Item_Nuke 5", "Item_SpellShards 3"}
 behaviorLib.MidItems =
-	{"Item_Lightning2", "Item_Evaision"} 
+	{"Item_Lightning2", "Item_Evasion"} 
 behaviorLib.LateItems =
-	{"Item_Weapon3", "Item_BehemothsHeart", "Item_Lifesteal4"}
+	{"Item_Weapon3", "Item_BehemothsHeart", "Item_LifeSteal4"}
 
 -- Skill build. 0 is Leech, 1 is Infest, 2 is Draining Venom, 3 is Facehug, 4 is Attributes
 object.tSkills = {
@@ -101,7 +101,7 @@ object.tSkills = {
 object.nLeechUp = 5
 object.nInfestUp = 0
 object.nFacehugUp = 10
-object.nCodexUp = 7
+object.nNukeUp = 7
 object.nChargedHammerUp = 4
 object.nSymbolOfRageUp = 4
 
@@ -109,15 +109,15 @@ object.nSymbolOfRageUp = 4
 object.nLeechUse = 10
 object.nInfestUse = 0
 object.nFacehugUse = 20
-object.nCodexUse = 14
+object.nNukeUse = 14
 object.nChargedHammerUse = 8
 object.nSymbolOfRageUse = 8
 
 -- Thresholds of aggression the bot must reach to use these abilities
-object.nLeechThershold = 12
+object.nLeechThreshold = 12
 object.nInfestThreshold = 0
 object.nFacehugThreshold = 40
-object.nCodexThreshold = 28
+object.nNukeThreshold = 10
 object.nChargedHammerThreshold = 16
 object.nSymbolOfRageThreshold = 16
 
@@ -167,12 +167,12 @@ local function funcFindItemsOverride(botBrain)
 	
 	--removes item if sold
 	core.ValidateItem(core.itemGhostMarchers)	
-	core.ValidateItem(core.itemCodex)
+	core.ValidateItem(core.itemNuke)
 	core.ValidateItem(core.itemChargedHammer)
 	core.ValidateItem(core.itemSymbolOfRage)
 
 	if bUpdated then
-		if core.itemGhostMarchers and core.itemCodex and core.itemChargedHammer and core.itemSymbolOfRage then
+		if core.itemNuke and core.itemChargedHammer and core.itemSymbolOfRage then
 			return
 		end
 
@@ -180,11 +180,12 @@ local function funcFindItemsOverride(botBrain)
 		for slot = 1, 6, 1 do
 			local curItem = inventory[slot]
 			if curItem then
-				if core.itemCodex == nil and curItem:GetName() == "Item_Nuke" then
-					core.itemCodex = core.WrapInTable(curItem)
+				if core.itemNuke == nil and curItem:GetName() == "Item_Nuke" then
+					core.itemNuke = core.WrapInTable(curItem)
+					botecho("got Nuke")					
 				elseif core.itemChargedHammer == nil and curItem:GetName() == "Item_Lightning2" then
 					core.itemChargedHammer = core.WrapInTable(curItem)
-				elseif core.itemSymbolOfRage == nil and curItem:GetName() == "Item_Lifesteal4" then
+				elseif core.itemSymbolOfRage == nil and curItem:GetName() == "Item_LifeSteal4" then
 					core.itemSymbolOfRage = core.WrapInTable(curItem)
 				end
 			end
@@ -226,12 +227,12 @@ function object:oncombateventOverride(EventData)
 			nAddBonus = nAddBonus + object.nFacehugUse
 		end
 	elseif EventData.Type == "Item" then
-		if core.itemCodex ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemCodex:GetName() then
-			nAddBonus = nAddBonus + self.nCodex
+		if core.itemNuke ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemNuke:GetName() then
+			nAddBonus = nAddBonus + object.nNukeUse
 		elseif core.itemChargedHammer ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemChargedHammer:GetName() then
-			nAddBonus = nAddBonus + self.nChargedHammerUse
+			nAddBonus = nAddBonus + object.nChargedHammerUse
 		elseif core.itemSymbolOfRage ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemSymbolOfRage:GetName() then
-			nAddBonus = nAddBonus + self.nBSymbolOfRageUse
+			nAddBonus = nAddBonus + object.nBSymbolOfRageUse
 		end
 	end
 
@@ -263,8 +264,8 @@ local function CustomHarassUtilityFnOverride(hero)
 		nUtility = nUtility + object.nFacehugUp
 	end
 	
-	if object.itemCodex and object.itemCodex:CanActivate() then
-		nUtility = nUtility + object.nCodexUp
+	if object.itemNuke and object.itemNuke:CanActivate() then
+		nUtility = nUtility + object.nNukeUp
 	end
 	
 	if object.itemChargedHammer and object.itemChargedHammer:CanActivate() then
@@ -279,12 +280,6 @@ local function CustomHarassUtilityFnOverride(hero)
 end
 
 behaviorLib.CustomHarassUtility = CustomHarassUtilityFnOverride
-
------------------------------------
---          Infest Logic         --
------------------------------------
-
--------------------TO BE IMPLEMENTED----------------------
 
 
 ----------------------------------------
@@ -301,6 +296,7 @@ local function HarassHeroExecuteOverride(botBrain)
 
 	local unitSelf = core.unitSelf
 	local vecMyPosition = unitSelf:GetPosition()
+	local vecTargetPosition = unitTarget:GetPosition()
 	local nTargetDistanceSq = Vector3.Distance2DSq(vecMyPosition, vecTargetPosition)
 	local nLastHarassUtility = behaviorLib.lastHarassUtil
 	local bActionTaken = false
@@ -309,7 +305,7 @@ local function HarassHeroExecuteOverride(botBrain)
 	if not bActionTaken then
 		local abilLeech = skills.abilLeech
 		if abilLeech:CanActivate() and nLastHarassUtility > botBrain.nLeechThreshold then
-				bActionTaken = core.OrderAbilityPosition(botBrain, abilLeech, vecTargetPosition, false)
+				bActionTaken = core.OrderAbilityEntity(botBrain, abilLeech, unitTarget, false)
 		end
 	end
 
@@ -317,18 +313,26 @@ local function HarassHeroExecuteOverride(botBrain)
 	if not bActionTaken then
 		local abilFacehug = skills.abilFacehug
 		if abilFacehug:CanActivate() and nLastHarassUtility > botBrain.nFacehugThreshold then
-			bActionTaken = core.OrderAbilityPosition(botBrain, abilFacehug, vecTargetPosition, false)
+			bActionTaken = core.OrderAbilityEntity(botBrain, abilFacehug, unitTarget, false)
 		end
 	end
 
 	-- Codex
 	if not bActionTaken then
-		local itemCodex = core.itemCodex
-		if itemCodex and itemCodex:CanActivate() then
-		bActionTaken = core.OrderItemEntity(botBrain, itemCodex, unitTarget, false)
+		local itemNuke = core.itemNuke
+		if itemNuke then
+			local nNukeRange = itemNuke:GetRange()
+			if itemNuke:CanActivate() and nLastHarassUtility > botBrain.nNukeThreshold then
+				if nTargetDistanceSq <= (nNukeRange * nNukeRange) then
+					bActionTaken = core.OrderItemEntityClamp(botBrain, unitSelf, itemNuke, unitTarget)
+					bActionTaken = core.OrderAttackClamp(botBrain, unitSelf, unitTarget, false, true)
+				elseif nTargetDistanceSq > (nNukeRange * nNukeRange) then
+					bActionTaken = core.OrderMoveToUnitClamp(botBrain, unitSelf, unitTarget)
+				end
+			end
 		end
 	end
-	
+
 	if not bActionTaken then
 		return object.harassExecuteOld(botBrain)
 	end
@@ -496,6 +500,7 @@ tinsert(behaviorLib.tBehaviors, behaviorLib.jungleBehavior)
 ----------------------------------------
 --          Behaviour Changes         --
 ----------------------------------------
+
 function zeroUtility(botBrain)
 	return 0
 end
