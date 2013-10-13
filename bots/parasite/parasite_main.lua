@@ -78,7 +78,7 @@ local sqrtTwo = math.sqrt(2)
 BotEcho('loading parasite_main...')
 
 --------------------------------
--- Lanes
+-- 			  Lanes			  --
 --------------------------------
 core.tLanePreferences = {Jungle = 5, Mid = 1, ShortSolo = 1, LongSolo = 1, ShortSupport = 1, LongSupport = 1, ShortCarry = 3, LongCarry = 2, hero=core.unitSelf}
 
