@@ -349,7 +349,7 @@ local function HarassHeroExecuteOverride(botBrain)
 					bActionTaken = core.OrderItemEntityClamp(botBrain, unitSelf, itemNuke, unitTarget)
 					bActionTaken = core.OrderAttackClamp(botBrain, unitSelf, unitTarget, false, true)
 				elseif nTargetDistanceSq > (nNukeRange * nNukeRange) then
-					bActionTaken = core.OrderMoveToUnitClamp(botBrain, unitSelf, unitTarget)
+					bActionTaken = core.OrderItemEntityClamp(botBrain, unitSelf, itemNuke, unitTarget)
 				end
 			end
 		end
@@ -366,11 +366,11 @@ object.harassExecuteOld = behaviorLib.HarassHeroBehavior["Execute"]
 behaviorLib.HarassHeroBehavior["Execute"] = HarassHeroExecuteOverride
 
 ---------------------------------------
---          Jungle Behavior          --
+--          Jungle Behaviour          --
 ---------------------------------------
 --
 -- Utility: 21
--- This is effectively an "idle" behavior
+-- This is effectively an "idle" behaviour
 --
 -- Execute:
 -- Move to unoccupied camps
@@ -381,7 +381,7 @@ behaviorLib.HarassHeroBehavior["Execute"] = HarassHeroExecuteOverride
 behaviorLib.nCreepAggroUtility = 0
 --behaviorLib.nRecentDamageMul = 0.20
 
--------- Behavior Functions --------
+-------- Behaviour Functions --------
 function jungleUtility(botBrain)
 	if HoN.GetRemainingPreMatchTime() and HoN.GetRemainingPreMatchTime()>10000 then
 		return 0
