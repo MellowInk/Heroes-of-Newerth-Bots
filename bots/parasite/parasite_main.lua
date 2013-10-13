@@ -516,19 +516,19 @@ behaviorLib.PreGameBehavior["Utility"] = zeroUtility
 -----------------------------------
 
 core.tKillChatKeys={
-    "BUAHAHAHA!",
-    "Off with their heads!",
-    "I put the meaning into human blender.",
-    "You spin me right round!",
-    "Did I break your spirit?",
-    "You spin my head right round, right round. When ya go down, when ya go down down."
+    "Don't throw up!",
+    "You look a little sick.",
+    "Why is your face so pale?",
+    "The SITE up here is to DIE for!",
+    "Nothing is immune to me!",
 }
 
 core.tDeathChatKeys = {
-    "Spinning out of control..",
+    "All I wanted was a hug!",
     "I think I'm gonna throw up...",
-    "Stop taunting me!",
-    "Off with.....my head?"
+    "I feel sick..",
+    "Let me back in!!!"
+	"You cant get rid of me forever"
 }
 
 BotEcho(object:GetName()..' finished loading parasite_main')
