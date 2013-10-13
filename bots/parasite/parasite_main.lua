@@ -182,23 +182,21 @@ local function funcFindItemsOverride(botBrain)
 	core.ValidateItem(core.itemChargedHammer)
 	core.ValidateItem(core.itemSymbolOfRage)
 
-	if bUpdated then
-		if core.itemNuke and core.itemChargedHammer and core.itemSymbolOfRage then
-			return
-		end
+	--bupdated seems to break this O.o
+	if core.itemNuke and core.itemChargedHammer and core.itemSymbolOfRage then
+		return
+	end
 
-		local inventory = core.unitSelf:GetInventory(true)
-		for slot = 1, 6, 1 do
-			local curItem = inventory[slot]
-			if curItem then
-				if core.itemNuke == nil and curItem:GetName() == "Item_Nuke" then
-					core.itemNuke = core.WrapInTable(curItem)
-					BotEcho("got Nuke")					
-				elseif core.itemChargedHammer == nil and curItem:GetName() == "Item_Lightning2" then
-					core.itemChargedHammer = core.WrapInTable(curItem)
-				elseif core.itemSymbolOfRage == nil and curItem:GetName() == "Item_LifeSteal4" then
-					core.itemSymbolOfRage = core.WrapInTable(curItem)
-				end
+	local inventory = core.unitSelf:GetInventory(false)
+	for slot = 1, 6, 1 do
+		local curItem = inventory[slot]
+		if curItem then
+			if core.itemNuke == nil and curItem:GetName() == "Item_Nuke" then
+				core.itemNuke = core.WrapInTable(curItem)
+			elseif core.itemChargedHammer == nil and curItem:GetName() == "Item_Lightning2" then
+				core.itemChargedHammer = core.WrapInTable(curItem)
+			elseif core.itemSymbolOfRage == nil and curItem:GetName() == "Item_LifeSteal4" then
+				core.itemSymbolOfRage = core.WrapInTable(curItem)
 			end
 		end
 	end
@@ -408,7 +406,7 @@ function jungleExecute(botBrain)
 	local vecMyPos = unitSelf:GetPosition()
 	local vecTargetPos, nCamp = jungleLib.getNearestCampPos(vecMyPos, 40, jungleLib.currentMaxDifficulty, unitSelf:GetTeam())
 	if jungleLib.jungleSpots and jungleLib.jungleSpots[nCamp] and jungleLib.jungleSpots[nCamp].outsidePos then vecTargetPos = jungleLib.jungleSpots[nCamp].outsidePos end
-	if not vecTargetPos then
+	if not vecTargetPos and jungleLib.jungleSpots and jungleLib.jungleSpots[7] then
 		if core.myTeam == HoN.GetHellbourneTeam() then
 			return core.OrderMoveToPosAndHoldClamp(botBrain, unitSelf, jungleLib.jungleSpots[7].outsidePos)
 		else
