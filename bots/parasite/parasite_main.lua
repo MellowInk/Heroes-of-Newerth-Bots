@@ -361,7 +361,7 @@ behaviorLib.nCreepAggroUtility = 0
 
 -------- Behavior Functions --------
 function jungleUtility(botBrain)
-	if HoN.GetRemainingPreMatchTime() and HoN.GetRemainingPreMatchTime()>5000 then
+	if HoN.GetRemainingPreMatchTime() and HoN.GetRemainingPreMatchTime()>10000 then
 		return 0
 	end
 	-- Wait until level 9 to start grouping/pushing/defending
@@ -374,6 +374,12 @@ end
 jungleLib.nLastAttackPositionTime = 0
 object.unitInfestedUnit = nil
 function jungleExecute(botBrain)
+
+	--clear infested units
+	if (object.unitInfestedUnit and not object.unitInfestedUnit:IsAlive()) then
+		BotEcho("Infested unit gone!")
+		object.unitInfestedUnit = nil
+	end
 	local unitSelf = object.unitInfestedUnit or core.unitSelf
 	local debugMode = true
 
@@ -392,11 +398,6 @@ function jungleExecute(botBrain)
 	
 	local nTargetDistanceSq = Vector3.Distance2DSq(vecMyPos, jungleLib.jungleSpots[nCamp].outsidePos)
 	
-	--clear infested units
-	if (object.unitInfestedUnit and not object.unitInfestedUnit:IsAlive()) then
-		BotEcho("Infested unit gone!")
-		object.unitInfestedUnit = nil
-	end
 	
 	--if object.unitInfestedUnit then
 	--	return core.OrderMoveToPosAndHoldClamp(botBrain, object.unitInfestedUnit, core.allyWell:GetPosition())
@@ -415,7 +416,7 @@ function jungleExecute(botBrain)
 	end
 	]]
 	
-	BotEcho(math.sqrt(nTargetDistanceSq))
+	--BotEcho(math.sqrt(nTargetDistanceSq))
 	if nTargetDistanceSq > (800 * 800) then
 		if (object.unitInfestedUnit) then
 			if core.OrderAbility(botBrain, object.unitInfestedUnit:GetAbility(3)) then
