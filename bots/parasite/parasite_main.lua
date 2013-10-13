@@ -521,19 +521,19 @@ behaviorLib.PreGameBehavior["Utility"] = zeroUtility
 --          Custom Chat          --
 -----------------------------------
 
-core.tKillChatKeys={
+core.tKillChatKeys = {
     "Don't throw up!",
     "You look a little sick.",
     "Why is your face so pale?",
     "The SITE up here is to DIE for!",
-    "Nothing is immune to me!",
+    "Nothing is immune to me!"
 }
 
 core.tDeathChatKeys = {
     "All I wanted was a hug!",
     "I think I'm gonna throw up...",
     "I feel sick..",
-    "Let me back in!!!"
+    "Let me back in!!!",
 	"You cant get rid of me forever"
 }
 
