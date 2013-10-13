@@ -379,7 +379,7 @@ function jungleExecute(botBrain)
 
 	local vecMyPos = unitSelf:GetPosition()
 	local vecTargetPos, nCamp = jungleLib.getNearestCampPos(vecMyPos, 80, jungleLib.currentMaxDifficulty, unitSelf:GetTeam())
-	if jungleLib.jungleSpots[nCamp].outsidePos then vecTargetPos = jungleLib.jungleSpots[nCamp].outsidePos end
+	if jungleLib.jungleSpots and jungleLib.jungleSpots[nCamp] and jungleLib.jungleSpots[nCamp].outsidePos then vecTargetPos = jungleLib.jungleSpots[nCamp].outsidePos end
 	if not vecTargetPos then
 		if core.myTeam == HoN.GetHellbourneTeam() then
 			return core.OrderMoveToPosAndHoldClamp(botBrain, unitSelf, jungleLib.jungleSpots[7].outsidePos)
@@ -415,12 +415,14 @@ function jungleExecute(botBrain)
 	end
 	]]
 	
-	--BotEcho(math.sqrt(nTargetDistanceSq))
-	if nTargetDistanceSq > (400 * 400) then
+	BotEcho(math.sqrt(nTargetDistanceSq))
+	if nTargetDistanceSq > (800 * 800) then
 		if (object.unitInfestedUnit) then
-			core.OrderAbility(botBrain, object.unitInfestedUnit:GetAbility(3))
-			object.unitInfestedUnit=nil
-			return
+			if core.OrderAbility(botBrain, object.unitInfestedUnit:GetAbility(3)) then
+				object.unitInfestedUnit=nil
+				BotEcho("getting rid of old unit")
+				return
+			end
 		end
 		
 		--moving to the camp
@@ -435,7 +437,7 @@ function jungleExecute(botBrain)
 		end
 	else 
 		-- Kill neutrals in the camp
-		local tUnits = HoN.GetUnitsInRadius(vecMyPos, 800, core.UNIT_MASK_ALIVE + core.UNIT_MASK_UNIT)
+		local tUnits = HoN.GetUnitsInRadius(vecMyPos, 900, core.UNIT_MASK_ALIVE + core.UNIT_MASK_UNIT)
 		if tUnits then
 			if (skills.abilInfest:CanActivate()) then
 				-- Find the strongest unit in the camp
@@ -479,7 +481,7 @@ function jungleExecute(botBrain)
 				end
 				if (unitWeakest) then
 					--BotEcho("Attacking weakest")
-					core.OrderAttackClamp(botBrain, unitSelf, unitWeakest, false)
+					return core.OrderAttackClamp(botBrain, unitSelf, unitWeakest, false)
 				else
 					return core.OrderAttackPosition(botBrain, unitSelf, vecTargetPos)
 				end
