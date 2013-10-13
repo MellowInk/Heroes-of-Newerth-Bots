@@ -400,11 +400,13 @@ function jungleExecute(botBrain)
 		--BotEcho("Infested unit gone!")
 		object.unitInfestedUnit = nil
 	end
-	local unitSelf = (object.unitInfestedUnit ~= nil and object.unitInfestedUnit) or core.unitSelf
+	local unitSelf = (object.unitInfestedUnit ~= nil and object.unitInfestedUnit) or core.unitSelf	
 	local debugMode = true
 
 	local vecMyPos = unitSelf:GetPosition()
 	local vecTargetPos, nCamp = jungleLib.getNearestCampPos(vecMyPos, 40, jungleLib.currentMaxDifficulty, unitSelf:GetTeam())
+	if nCamp==nil then return end --we have no position, abort!
+	
 	if jungleLib.jungleSpots and jungleLib.jungleSpots[nCamp] and jungleLib.jungleSpots[nCamp].outsidePos then vecTargetPos = jungleLib.jungleSpots[nCamp].outsidePos end
 	if not vecTargetPos and jungleLib.jungleSpots and jungleLib.jungleSpots[7] then
 		if core.myTeam == HoN.GetHellbourneTeam() then
@@ -415,8 +417,9 @@ function jungleExecute(botBrain)
 	end
 
 	if debugMode then core.DrawDebugArrow(vecMyPos, vecTargetPos, 'green') end
-	
-	local nTargetDistanceSq = Vector3.Distance2DSq(vecMyPos, jungleLib.jungleSpots[nCamp].outsidePos)
+		
+	local nOutsideDistanceSq = Vector3.Distance2DSq(vecMyPos, jungleLib.jungleSpots[nCamp].outsidePos)
+	local nDistanceSq = Vector3.Distance2DSq(vecMyPos, vecTargetPos)
 	
 	
 	--if object.unitInfestedUnit then
@@ -437,7 +440,8 @@ function jungleExecute(botBrain)
 	]]
 	
 	--BotEcho(math.sqrt(nTargetDistanceSq))
-	if nTargetDistanceSq > (800 * 800) then
+	
+	if nOutsideDistanceSq > (800 * 800) then
 		if (object.unitInfestedUnit) then
 			if core.OrderAbility(botBrain, object.unitInfestedUnit:GetAbility(3)) then
 				object.unitInfestedUnit=nil
@@ -445,22 +449,12 @@ function jungleExecute(botBrain)
 				return
 			end
 		end
-		
-		--moving to the camp
-		if (skills.abilInfest:CanActivate()) then
-			return core.OrderMoveToPosAndHoldClamp(botBrain, unitSelf, jungleLib.jungleSpots[nCamp].outsidePos)
-		else
-			if (core.GetAttackSequenceProgress(unitSelf)=="idle") then
-				core.OrderAttackPosition(botBrain, unitSelf, jungleLib.jungleSpots[nCamp].outsidePos)
-				jungleLib.nLastAttackPositionTime = HoN.GetGameTime()
-			end
-			return
-		end
+		return core.OrderMoveToPosAndHoldClamp(botBrain, unitSelf, jungleLib.jungleSpots[nCamp].outsidePos)
 	else 
 		-- Kill neutrals in the camp
 		local tUnits = HoN.GetUnitsInRadius(vecMyPos, 900, core.UNIT_MASK_ALIVE + core.UNIT_MASK_UNIT)
 		if tUnits then
-			if (skills.abilInfest:CanActivate()) then
+			if (skills.abilInfest:CanActivate() and nDistanceSq < (500 * 500)) then
 				-- Find the strongest unit in the camp
 				local nHighestHealth = unitSelf:GetHealth()/5
 				local unitStrongest = nil
@@ -478,7 +472,9 @@ function jungleExecute(botBrain)
 						return
 					end
 				else
-					return core.OrderAttackPosition(botBrain, unitSelf, vecTargetPos)
+					if (core.GetAttackSequenceProgress(unitSelf)=="idle") then
+						return core.OrderAttackPosition(botBrain, unitSelf, vecTargetPos)
+					end
 				end
 			end
 			
@@ -486,29 +482,33 @@ function jungleExecute(botBrain)
 				--BotEcho("Using ability!")
 				core.OrderAbility(botBrain, object.unitInfestedUnit:GetAbility(0))
 			else
-				local nLowestHealth = 999999
-				local unitWeakest = nil
-				--BotEcho("Gonna search for a target "..core.NumberElements(tUnits))
-				
-				for _, unitTarget in pairs(tUnits) do
-					if unitTarget:GetHealth() < nLowestHealth and unitTarget:IsAlive() and unitTarget:GetTeam() ~= core.myTeam and unitTarget:GetTeam() ~= core.enemyTeam then
-						--BotEcho("Searching for weakest")
-						unitWeakest = unitTarget
-						nLowestHealth = unitTarget:GetHealth()
-						core.DrawXPosition(unitTarget:GetPosition(), 'yellow')
-					else
-						core.DrawXPosition(unitTarget:GetPosition(), 'red')
+				if (skills.abilInfest:GetActualRemainingCooldownTime()<8 or nDistanceSq < (500 * 500) or object.unitInfestedUnit ~= nil) then
+					local nLowestHealth = 999999
+					local unitWeakest = nil
+					--BotEcho("Gonna search for a target "..core.NumberElements(tUnits))
+					
+					for _, unitTarget in pairs(tUnits) do
+						if unitTarget:GetHealth() < nLowestHealth and unitTarget:IsAlive() and unitTarget:GetTeam() ~= core.myTeam and unitTarget:GetTeam() ~= core.enemyTeam then
+							--BotEcho("Searching for weakest")
+							unitWeakest = unitTarget
+							nLowestHealth = unitTarget:GetHealth()
+							core.DrawXPosition(unitTarget:GetPosition(), 'yellow')
+						else
+							core.DrawXPosition(unitTarget:GetPosition(), 'red')
+						end
 					end
-				end
-				if (unitWeakest) then
-					--BotEcho("Attacking weakest")
-					return core.OrderAttackClamp(botBrain, unitSelf, unitWeakest, false)
+					if (unitWeakest) then
+						--BotEcho("Attacking weakest")
+						return core.OrderAttackClamp(botBrain, unitSelf, unitWeakest, false)
+					else
+						return core.OrderAttackPosition(botBrain, unitSelf, vecTargetPos)
+					end
 				else
-					return core.OrderAttackPosition(botBrain, unitSelf, vecTargetPos)
+					return core.OrderMoveToPosAndHoldClamp(botBrain, unitSelf, jungleLib.jungleSpots[nCamp].outsidePos)
 				end
 			end
 		else
-			return core.OrderMoveToPosAndHoldClamp(botBrain, unitSelf, vecTargetPos)
+			return core.OrderMoveToPosAndHoldClamp(botBrain, unitSelf, jungleLib.jungleSpots[nCamp].outsidePos)
 		end
 	end
 	return false
