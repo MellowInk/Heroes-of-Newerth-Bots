@@ -109,18 +109,18 @@ object.tSkills = {
 }
 
 -- Bonus aggression points if a skill/item is available for use
-object.nLeechUp = 5
+object.nLeechUp = 10
 object.nInfestUp = 0
-object.nFacehugUp = 10
-object.nNukeUp = 7
+object.nFacehugUp = 15
+object.nNukeUp = 12
 object.nChargedHammerUp = 4
 object.nSymbolOfRageUp = 4
 
 -- Bonus aggression points that are applied to the bot upon successfully using a skill/item
-object.nLeechUse = 10
+object.nLeechUse = 20
 object.nInfestUse = 0
-object.nFacehugUse = 20
-object.nNukeUse = 14
+object.nFacehugUse = 25
+object.nNukeUse = 20
 object.nChargedHammerUse = 8
 object.nSymbolOfRageUse = 8
 
@@ -399,7 +399,7 @@ object.unitInfestedUnit = nil
 object.unitInfestingUnit = nil --currently infesting this unit
 function jungleExecute(botBrain)
 
-	if (object.unitInfestingUnit and object.unitInfestingUnit:HasState("State_Parasite_Ability2_Target")) then
+	if (object.unitInfestingUnit and object.unitInfestingUnit:IsValid() and object.unitInfestingUnit:HasState("State_Parasite_Ability2_Target")) then
 		object.unitInfestedUnit = object.unitInfestingUnit
 		object.unitInfestingUnit = nil
 	end
