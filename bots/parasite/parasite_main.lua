@@ -95,7 +95,7 @@ behaviorLib.StartingItems =
 behaviorLib.LaneItems =
 	{"Item_Marchers", "Item_EnhancedMarchers", "Item_Nuke 5", "Item_SpellShards 3"}
 behaviorLib.MidItems =
-	{"Item_Lightning2", "Item_Evasion"} 
+	{"Item_GrimoireOfPower", "Item_Evasion"} 
 behaviorLib.LateItems =
 	{"Item_Weapon3", "Item_BehemothsHeart", "Item_LifeSteal4"}
 
@@ -113,7 +113,7 @@ object.nLeechUp = 5
 object.nInfestUp = 0
 object.nFacehugUp = 10
 object.nNukeUp = 7
-object.nChargedHammerUp = 4
+--object.nGrimoireOfPowerUp = 4
 object.nSymbolOfRageUp = 4
 
 -- Bonus aggression points that are applied to the bot upon successfully using a skill/item
@@ -121,7 +121,7 @@ object.nLeechUse = 10
 object.nInfestUse = 0
 object.nFacehugUse = 20
 object.nNukeUse = 14
-object.nChargedHammerUse = 8
+--object.nGrimoireOfPowerUse = 8
 object.nSymbolOfRageUse = 8
 
 -- Thresholds of aggression the bot must reach to use these abilities
@@ -129,7 +129,7 @@ object.nLeechThreshold = 12
 object.nInfestThreshold = 0
 object.nFacehugThreshold = 40
 object.nNukeThreshold = 10
-object.nChargedHammerThreshold = 16
+--object.nGrimoireOfPowerThreshold = 16
 object.nSymbolOfRageThreshold = 16
 
 -- Other variables
@@ -179,11 +179,11 @@ local function funcFindItemsOverride(botBrain)
 	--removes item if sold
 	core.ValidateItem(core.itemGhostMarchers)	
 	core.ValidateItem(core.itemNuke)
-	core.ValidateItem(core.itemChargedHammer)
+	--core.ValidateItem(core.itemGrimoireOfPower)
 	core.ValidateItem(core.itemSymbolOfRage)
 
 	--bupdated seems to break this O.o
-	if core.itemNuke and core.itemChargedHammer and core.itemSymbolOfRage then
+	if core.itemNuke--[[ and core.itemGrimoireOfPower]] and core.itemSymbolOfRage then
 		return
 	end
 
@@ -193,8 +193,8 @@ local function funcFindItemsOverride(botBrain)
 		if curItem then
 			if core.itemNuke == nil and curItem:GetName() == "Item_Nuke" then
 				core.itemNuke = core.WrapInTable(curItem)
-			elseif core.itemChargedHammer == nil and curItem:GetName() == "Item_Lightning2" then
-				core.itemChargedHammer = core.WrapInTable(curItem)
+			-- elseif core.itemGrimoireOfPower == nil and curItem:GetName() == "Item_GrimoireOfPower" then
+				-- core.itemGrimoireOfPower = core.WrapInTable(curItem)
 			elseif core.itemSymbolOfRage == nil and curItem:GetName() == "Item_LifeSteal4" then
 				core.itemSymbolOfRage = core.WrapInTable(curItem)
 			end
@@ -249,8 +249,8 @@ function object:oncombateventOverride(EventData)
 	elseif EventData.Type == "Item" then
 		if core.itemNuke ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemNuke:GetName() then
 			nAddBonus = nAddBonus + object.nNukeUse
-		elseif core.itemChargedHammer ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemChargedHammer:GetName() then
-			nAddBonus = nAddBonus + object.nChargedHammerUse
+		-- elseif core.itemGrimoireOfPower ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemGrimoireOfPower:GetName() then
+			-- nAddBonus = nAddBonus + object.nGrimoireOfPowerUse
 		elseif core.itemSymbolOfRage ~= nil and EventData.SourceUnit == core.unitSelf:GetUniqueID() and EventData.InflictorName == core.itemSymbolOfRage:GetName() then
 			nAddBonus = nAddBonus + object.nBSymbolOfRageUse
 		end
@@ -288,9 +288,9 @@ local function CustomHarassUtilityFnOverride(hero)
 		nUtility = nUtility + object.nNukeUp
 	end
 	
-	if object.itemChargedHammer and object.itemChargedHammer:CanActivate() then
-		nUtility = nUtility + object.nChargedHammerUp
-	end
+	-- if object.itemGrimoireOfPower and object.itemGrimoireOfPower:CanActivate() then
+		-- nUtility = nUtility + object.nGrimoireOfPowerUp
+	-- end
 
 	if object.itemSymbolOfRage and object.itemSymbolOfRage:CanActivate() then
 		nUtility = nUtility + object.nSymbolOfRageUp
