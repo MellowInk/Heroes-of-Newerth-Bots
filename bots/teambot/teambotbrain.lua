@@ -129,8 +129,14 @@ function object:onthink(tGameVariables)
 				-- don't reset this when the tutorial switches Legion to medium
 			end
 
-			if core.nDifficulty == core.nEASY_DIFFICULTY and core.IsTableEmpty(object.tAllyHumanHeroes) then
+			local bEnemyTeamHasHuman = core.EnemyTeamHasHuman()
+
+			if core.nDifficulty == core.nEASY_DIFFICULTY and bEnemyTeamHasHuman then
 				object.bGroupAndPush = false
+			end
+
+			if core.nDifficulty == core.nEASY_DIFFICULTY and bEnemyTeamHasHuman then
+				object.bDefense = false
 			end
 		end
 	end
@@ -945,7 +951,11 @@ function object:PushUtility()
 end
 
 function object:GetGroupRallyPoint()
-	return self.unitRallyBuilding:GetPosition()
+	if self.unitRallyBuilding ~= nil then
+		return self.unitRallyBuilding:GetPosition()
+	end
+	
+	return nil
 end
 
 
@@ -1291,15 +1301,15 @@ function object:BuildLanes()
 	--Omit certain lane roles due to where human players are. *This will be handled in validLanes later, but this is for better processing time.
 	if (#tLongLane>0) then
 		tremove(tPossibleLanes,"LongSolo")
+		tremove(tPossibleLanes,"LongCarry")
 		if (#tLongLane>1) then
-			tremove(tPossibleLanes,"LongCarry")
 			tremove(tPossibleLanes,"LongSupport")
 		end
 	end
 	if (#tShortLane>0) then
 		tremove(tPossibleLanes,"ShortSolo")
+		tremove(tPossibleLanes,"ShortCarry")
 		if (#tShortLane>1) then
-			tremove(tPossibleLanes,"ShortCarry")
 			tremove(tPossibleLanes,"ShortSupport")
 		end
 	end
