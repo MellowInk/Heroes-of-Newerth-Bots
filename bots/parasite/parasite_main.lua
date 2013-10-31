@@ -91,7 +91,7 @@ object.heroName = 'Hero_Parasite'
 
 -- Item buy order. internal names
 behaviorLib.StartingItems =
-	{"Item_ManaPotion 5", "Item_Scarab"}
+	{"Item_ManaPotion", "Item_Scarab", "Item_ManaPotion", "Item_ManaPotion", "Item_ManaPotion", "Item_ManaPotion",}
 behaviorLib.LaneItems =
 	{"Item_Marchers", "Item_EnhancedMarchers", "Item_Nuke 5", "Item_SpellShards 3"}
 behaviorLib.MidItems =
