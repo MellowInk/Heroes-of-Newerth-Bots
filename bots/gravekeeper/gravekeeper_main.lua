@@ -1133,8 +1133,7 @@ object.tCustomKillKeys = {
 	"schnarchnase_grave_kill4",
 	"schnarchnase_grave_kill5",
 	"schnarchnase_grave_kill6",
-	"schnarchnase_grave_kill7",
-	"schnarchnase_grave_kill8"   }
+	"schnarchnase_grave_kill7"   }
 
 local function GetKillKeysOverride(unitTarget)
 	local tChatKeys = object.funcGetKillKeysOld(unitTarget)
@@ -1149,8 +1148,7 @@ object.tCustomRespawnKeys = {
 	"schnarchnase_grave_respawn1",
 	"schnarchnase_grave_respawn2",
 	"schnarchnase_grave_respawn3",
-	"schnarchnase_grave_respawn4",
-	"schnarchnase_grave_respawn5"	}
+	"schnarchnase_grave_respawn4"	}
 
 local function GetRespawnKeysOverride()
 	local tChatKeys = object.funcGetRespawnKeysOld()
@@ -1165,8 +1163,7 @@ object.tCustomDeathKeys = {
 	"schnarchnase_grave_death1",
 	"schnarchnase_grave_death2",
 	"schnarchnase_grave_death3",
-	"schnarchnase_grave_death4",
-	"schnarchnase_grave_death5"  }
+	"schnarchnase_grave_death4"  }
 
 local function GetDeathKeysOverride(unitSource)
 	local tChatKeys = object.funcGetDeathKeysOld(unitSource)
